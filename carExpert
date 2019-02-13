@@ -1,0 +1,37 @@
+#!/usr/bin/env node
+
+const BinaryResponse = require('./src/binaryResponse');
+const userInput = require('./src/userInput');
+
+const fuelInjectionQuestion = new BinaryResponse(
+  userInput('Does your car have fuel injection?'),
+  () => 'Get it in for service.',
+  () => 'Check to ensure the choke is opening and closing.');
+
+const engineStallQuestion = new BinaryResponse(
+  userInput('Does the engine start and then die?'),
+  () => fuelInjectionQuestion.collect(),
+  () => 'Stop wastin\' my time!');
+
+const engineCrankQuestion = new BinaryResponse(
+  userInput('Does the car crank up but fail to start?'),
+  () => 'Check spark plug connections.',
+  () => engineStallQuestion.collect());
+
+const clickingQuestion = new BinaryResponse(
+  userInput('Does the car make a clicking noise?'),
+  () => 'Replace the battery.',
+  () => engineCrankQuestion.collect());
+
+const batteryQuestion = new BinaryResponse(
+  userInput('Are the battery terminals corroded?'),
+  () => 'Clean terminals and try starting again.',
+  () => 'Replace cables and try again');
+
+const silentQuestion = new BinaryResponse(
+  userInput('Is the car silent when you turn the key?'),
+  () => batteryQuestion.collect(),
+  () => clickingQuestion.collect());
+
+silentQuestion.collect()
+  .then(console.log);
