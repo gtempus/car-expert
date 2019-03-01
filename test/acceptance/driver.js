@@ -1,5 +1,8 @@
 const spawn = require('child_process').spawn;
 
+const carExpert = spawn('./carExpert');
+const customerWithFaultyChoke = answerQuestionGenerator(carExpert.stdin);
+
 function answerQuestion(readable, answer = 'yes') {
   return new Promise((resolve) => {
     if (!readable.write(`${answer}\n`)) {
@@ -18,8 +21,6 @@ function* answerQuestionGenerator(readable) {
   yield answerQuestion(readable, 'no');
 }
 
-const carExpert = spawn('./carExpert');
-const answers = answerQuestionGenerator(carExpert.stdin);
 let responses = [];
 
 const testEnd = setTimeout(() => {
@@ -33,7 +34,7 @@ carExpert.stdout.on('data', (data) => {
   if (!message.trim().endsWith('(yes/no)')) {
     carExpert.stdin.end();
   } else {
-    answers.next();
+    customerWithFaultyChoke.next();
   }
 });
 
